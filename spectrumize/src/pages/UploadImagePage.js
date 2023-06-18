@@ -1,65 +1,59 @@
-import React, { useState } from 'react';
-import UploadButton from '../components/UploadImage';
+import React from "react";
+import axios from "axios";
 
-const UploadPage = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
 
-  const handleUpload = (file) => {
-    // Handle file upload logic here
-    setSelectedFile(file);
+const FileUpload = () => {
+  const handleFileUpload = (event) => {
+    // get the selected file from the input
+    const file = event.target.files[0];
+    // create a new FormData object and append the file to it
+    const formData = new FormData();
+    formData.append("image", file);
+    // make a POST request to the File Upload API with the FormData object and Rapid API headers
+    axios
+      .post("http://localhost:8000/api/colorize-image/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+      })
+      .then((response) => {
+		// handle the response
+        console.log(response);
+      })
+      .catch((error) => {
+        // handle errors
+        console.log(error);
+      });
   };
-
+  // render a simple input element with an onChange event listener that calls the handleFileUpload function
   return (
     <div
       style={{
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'Arial, sans-serif',
       }}
     >
-      <h1
+      <label
+        htmlFor="file-upload"
         style={{
-          fontSize: '32px',
-          color: '#333',
-          marginBottom: '20px',
-          textAlign: 'center',
+          backgroundColor: '#f1f1f1',
+          border: '1px solid #ccc',
+          padding: '10px 20px',
+          borderRadius: '4px',
+          cursor: 'pointer',
         }}
       >
-        Upload your image
-      </h1>
-      <UploadButton onUpload={handleUpload} />
-      {selectedFile && (
-        <div
-          style={{
-            marginTop: '20px',
-            textAlign: 'center',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '24px',
-              color: '#333',
-              marginBottom: '10px',
-            }}
-          >
-            Selected Image:
-          </h2>
-          <img
-            src={URL.createObjectURL(selectedFile)}
-            alt="Uploaded"
-            style={{
-              maxWidth: '300px',
-              maxHeight: '300px',
-            }}
-          />
-        </div>
-      )}
+        <input
+          type="file"
+          id="file-upload"
+          style={{ display: 'none' }}
+          onChange={handleFileUpload}
+        />
+        Click here
+      </label>
     </div>
   );
 };
-
-export default UploadPage;
+export default FileUpload;
